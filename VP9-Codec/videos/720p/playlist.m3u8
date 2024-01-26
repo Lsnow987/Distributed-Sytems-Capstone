@@ -1,0 +1,12 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-ALLOW-CACHE:YES
+#EXT-X-TARGETDURATION:13
+#EXTINF:12.807000,
+videos/720p/segment_segment_00000.webm
+#EXTINF:8.533000,
+videos/720p/segment_segment_00001.webm
+#EXTINF:8.667000,
+videos/720p/segment_segment_00002.webm
+#EXT-X-ENDLIST
