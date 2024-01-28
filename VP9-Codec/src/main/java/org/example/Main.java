@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 public class Main {
 
     public static void main(String[] args) {
+//        using h264 codec - outdated - see here: https://techblog.skeepers.io/an-introduction-to-the-difficult-world-of-video-processing-c31642b9f806
         String commands = "# 240p\n" +
                 "mkdir -p videos/240p\n" +
                 "ffmpeg -i input.mp4 -c:v libx264 -b:v 400k -c:a aac -b:a 32k -threads 8 -g 128 -keyint_min 60 -s 426x240 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/240p/segment_%05d.ts videos/240p/playlist.m3u8\n" +
