@@ -9,6 +9,19 @@ public class Main {
 
     public static void main(String[] args) {
 //        using h264 codec - outdated - see here: https://techblog.skeepers.io/an-introduction-to-the-difficult-world-of-video-processing-c31642b9f806
+//       command for dash - ffmpeg -i input.webm -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output.mpd
+//# 240p
+//        ffmpeg -i input.webm -vf scale=426:240 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_240p.mpd
+//
+//# 480p
+//        ffmpeg -i input.webm -vf scale=854:480 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_480p.mpd
+//
+//# 720p
+//        ffmpeg -i input.webm -vf scale=1280:720 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_720p.mpd
+//
+//# 1080p
+//        ffmpeg -i input.webm -vf scale=1920:1080 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_1080p.mpd
+
         String commands = "# 240p\n" +
                 "mkdir -p videos/240p\n" +
                 "ffmpeg -i input.mp4 -c:v libx264 -b:v 400k -c:a aac -b:a 32k -threads 8 -g 128 -keyint_min 60 -s 426x240 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/240p/segment_%05d.ts videos/240p/playlist.m3u8\n" +
