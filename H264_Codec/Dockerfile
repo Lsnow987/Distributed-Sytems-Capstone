@@ -19,7 +19,6 @@ RUN apt-get update && \
 
 # Copy the JAR file and input.mp4
 COPY target/H264_Codec-1.0-SNAPSHOT.jar app.jar
-COPY input.mp4 input.mp4
 COPY inotify_script.sh inotify_script.sh
 COPY process_video.sh process_video.sh
 
