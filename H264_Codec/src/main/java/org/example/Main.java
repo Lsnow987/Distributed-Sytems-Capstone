@@ -18,59 +18,55 @@ public class Main {
 //
 //# 1080p
 //        ffmpeg -i input.webm -vf scale=1920:1080 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_1080p.mpd
+        String file;
+        try{
+            file = args[0];
+        } catch (Exception e) {
+            System.out.println("Please provide a file path as an argument");
+            return;
+        }
+
+//        get file name without path
+        String fileName = file.substring(file.lastIndexOf('/') + 1);
+//        remove extension
+        fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 
         String commands = "# 240p\n" +
-                "mkdir -p videos/240p\n" +
-                "ffmpeg -i input.mp4 -c:v libx264 -b:v 400k -c:a aac -b:a 32k -threads 8 -g 128 -keyint_min 60 -s 426x240 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/240p/segment_%05d.ts videos/240p/playlist.m3u8\n" +
+                "mkdir -p videos/" + fileName + "/240p\n" +
+                "ffmpeg -i " + file + " -c:v libx264 -b:v 400k -c:a aac -b:a 32k -threads 8 -g 128 -keyint_min 60 -s 426x240 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/240p/segment_%05d.ts videos/" + fileName + "/240p/playlist.m3u8\n" +
                 "\n" +
                 "# 480p\n" +
-                "mkdir -p videos/480p\n" +
-                "ffmpeg -i input.mp4 -c:v libx264 -b:v 800k -c:a aac -b:a 64k -threads 8 -g 128 -keyint_min 60 -s 854x480 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/480p/segment_%05d.ts videos/480p/playlist.m3u8\n" +
+                "mkdir -p videos/" + fileName + "/480p\n" +
+                "ffmpeg -i " + file + " -c:v libx264 -b:v 800k -c:a aac -b:a 64k -threads 8 -g 128 -keyint_min 60 -s 854x480 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/480p/segment_%05d.ts videos/" + fileName + "/480p/playlist.m3u8\n" +
                 "\n" +
                 "# 720p\n" +
-                "mkdir -p videos/720p\n" +
-                "ffmpeg -i input.mp4 -c:v libx264 -b:v 1500k -c:a aac -b:a 128k -threads 8 -g 128 -keyint_min 60 -s 1280x720 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/720p/segment_%05d.ts videos/720p/playlist.m3u8\n" +
+                "mkdir -p videos/" + fileName + "/720p\n" +
+                "ffmpeg -i " + file + " -c:v libx264 -b:v 1500k -c:a aac -b:a 128k -threads 8 -g 128 -keyint_min 60 -s 1280x720 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/720p/segment_%05d.ts videos/" + fileName + "/720p/playlist.m3u8\n" +
                 "\n" +
                 "# 1080p\n" +
-                "mkdir -p videos/1080p\n" +
-                "ffmpeg -i input.mp4 -c:v libx264 -b:v 3000k -c:a aac -b:a 192k -threads 8 -g 128 -keyint_min 60 -s 1920x1080 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/1080p/segment_%05d.ts videos/1080p/playlist.m3u8\n";
+                "mkdir -p videos/" + fileName + "/1080p\n" +
+                "ffmpeg -i " + file + " -c:v libx264 -b:v 3000k -c:a aac -b:a 192k -threads 8 -g 128 -keyint_min 60 -s 1920x1080 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/1080p/segment_%05d.ts videos/" + fileName + "/1080p/playlist.m3u8\n";
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", commands);
             Process process = processBuilder.start();
-            InputStream errorStream = process.getErrorStream();
-            InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
-            BufferedReader errorBufferedReader = new BufferedReader(errorStreamReader);
-
-            // Read error output (if any) and print it
-            String line2;
-            while ((line2 = errorBufferedReader.readLine()) != null) {
-                System.err.println(line2);
-            }
-            process.waitFor();
-//            System.out.println("Started ffmpeg process");
-
-//            // Read the output of the process
-//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    System.out.println(line);
-//                }
+//            InputStream errorStream = process.getErrorStream();
+//            InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
+//            BufferedReader errorBufferedReader = new BufferedReader(errorStreamReader);
+//            String line2;
+//            while ((line2 = errorBufferedReader.readLine()) != null) {
+//                System.err.println(line2);
 //            }
-//
-//            int exitCode = process.waitFor();
-//            System.out.println("Command exited with code: " + exitCode);
-
-            // Create a master M3U8 file
-            createMasterPlaylist();
+            process.waitFor();
+            createMasterPlaylist(fileName);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to execute ffmpeg command: " +  e);
         }
     }
 
-    public static void createMasterPlaylist() {
-        try (FileWriter writer = new FileWriter("videos/master_playlist.m3u8")) {
+    public static void createMasterPlaylist(String fileName) {
+        try (FileWriter writer = new FileWriter("videos/" + fileName + "/master_playlist.m3u8")) {
             writer.write("#EXTM3U\n");
             writer.write("#EXT-X-VERSION:3\n");
 
@@ -79,7 +75,6 @@ public class Main {
             addEntry(writer, "480p", "480p/playlist.m3u8");
             addEntry(writer, "720p", "720p/playlist.m3u8");
             addEntry(writer, "1080p", "1080p/playlist.m3u8");
-
             System.out.println("Master playlist created successfully");
         } catch (IOException e) {
             e.printStackTrace();
