@@ -1,9 +1,6 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Main {
 
@@ -41,22 +38,34 @@ public class Main {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", commands);
             Process process = processBuilder.start();
+            InputStream errorStream = process.getErrorStream();
+            InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
+            BufferedReader errorBufferedReader = new BufferedReader(errorStreamReader);
 
-            // Read the output of the process
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
+            // Read error output (if any) and print it
+            String line2;
+            while ((line2 = errorBufferedReader.readLine()) != null) {
+                System.err.println(line2);
             }
+            process.waitFor();
+//            System.out.println("Started ffmpeg process");
 
-            int exitCode = process.waitFor();
-            System.out.println("Command exited with code: " + exitCode);
+//            // Read the output of the process
+//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    System.out.println(line);
+//                }
+//            }
+//
+//            int exitCode = process.waitFor();
+//            System.out.println("Command exited with code: " + exitCode);
 
             // Create a master M3U8 file
             createMasterPlaylist();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to execute ffmpeg command: " +  e);
         }
     }
 
