@@ -1,30 +1,60 @@
 package org.example;
 
 import java.io.*;
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 
+    private static final String QUEUE_NAME = "video-processing-queue";
     public static void main(String[] args) {
-//        using h264 codec - outdated - see here: https://techblog.skeepers.io/an-introduction-to-the-difficult-world-of-video-processing-c31642b9f806
-//       command for dash - ffmpeg -i input.webm -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output.mpd
-//# 240p
-//        ffmpeg -i input.webm -vf scale=426:240 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_240p.mpd
-//
-//# 480p
-//        ffmpeg -i input.webm -vf scale=854:480 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_480p.mpd
-//
-//# 720p
-//        ffmpeg -i input.webm -vf scale=1280:720 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_720p.mpd
-//
-//# 1080p
-//        ffmpeg -i input.webm -vf scale=1920:1080 -c:v libx264 -c:a aac -map 0 -f dash -use_template 1 -init_seg_name init-stream\$RepresentationID\$.\$ext\$ -media_seg_name chunk-stream\$RepresentationID\$-\$Number%05d\$.\$ext\$ -adaptation_sets "id=0,streams=v id=1,streams=a" output_1080p.mpd
-        String file;
-        try{
-            file = args[0];
-        } catch (Exception e) {
-            System.out.println("Please provide a file path as an argument");
+        if (Files.exists(Paths.get("/home/lsnow/hello_world"))) {
             return;
         }
+        // Connect to RabbitMQ and consume messages
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("docker-java-jar");
+        factory.setPort(5672);
+        factory.setUsername("lsnow");
+        factory.setPassword("shaarei1234");
+
+        try {
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+            // Declare the queue
+            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
+            // Create a consumer and set up the callback to handle messages
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                String file = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                processVideo(file);
+            };
+
+            // Start consuming messages from the queue
+            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+
+            // Keep the program running until interrupted
+            while (true) {
+                Thread.sleep(1000);
+            }
+
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static void processVideo(String file) {
+        System.out.println(" [x] Received '" + file + "'");
 
 //        get file name without path
         String fileName = file.substring(file.lastIndexOf('/') + 1);
@@ -32,6 +62,7 @@ public class Main {
         fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 
         String commands = "# 240p\n" +
+                "ls /home/lsnow/upload\n" +
                 "mkdir -p videos/" + fileName + "/240p\n" +
                 "ffmpeg -i " + file + " -c:v libx264 -b:v 400k -c:a aac -b:a 32k -threads 8 -g 128 -keyint_min 60 -s 426x240 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/240p/segment_%05d.ts videos/" + fileName + "/240p/playlist.m3u8\n" +
                 "\n" +
@@ -45,24 +76,28 @@ public class Main {
                 "\n" +
                 "# 1080p\n" +
                 "mkdir -p videos/" + fileName + "/1080p\n" +
-                "ffmpeg -i " + file + " -c:v libx264 -b:v 3000k -c:a aac -b:a 192k -threads 8 -g 128 -keyint_min 60 -s 1920x1080 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/1080p/segment_%05d.ts videos/" + fileName + "/1080p/playlist.m3u8\n";
+                "ffmpeg -i " + file + " -c:v libx264 -b:v 3000k -c:a aac -b:a 192k -threads 8 -g 128 -keyint_min 60 -s 1920x1080 -hls_time 10 -hls_list_size 720 -hls_segment_filename videos/" + fileName + "/1080p/segment_%05d.ts videos/" + fileName + "/1080p/playlist.m3u8\n" +
+                "\n" +
+                "# delete original file\n" +
+                "rm " + file + "\n";
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", commands);
             Process process = processBuilder.start();
-//            InputStream errorStream = process.getErrorStream();
-//            InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
-//            BufferedReader errorBufferedReader = new BufferedReader(errorStreamReader);
-//            String line2;
-//            while ((line2 = errorBufferedReader.readLine()) != null) {
-//                System.err.println(line2);
-//            }
+            InputStream errorStream = process.getErrorStream();
+            InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
+            BufferedReader errorBufferedReader = new BufferedReader(errorStreamReader);
+            String line2;
+            while ((line2 = errorBufferedReader.readLine()) != null) {
+                System.err.println(line2);
+            }
             process.waitFor();
             createMasterPlaylist(fileName);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to execute ffmpeg command: " +  e);
         }
+        System.out.println(" [x] Done");
     }
 
     public static void createMasterPlaylist(String fileName) {

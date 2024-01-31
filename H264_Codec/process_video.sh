@@ -1,8 +1,8 @@
 # mvn clean package
 # docker image build -t docker-java-jar:latest .
 # docker run -v /home/lsnow/upload:/home/lsnow/upload -v /home/lsnow/videos:/videos docker-java-jar:latest
-# cp input.mp4 /home/lsnow/upload/
-#  cp -r /home/lsnow/videos/input/ .
+# cp input1.mp4 /home/lsnow/upload/
+#  cp -r /home/lsnow/videos/input1/ .
 
 #!/bin/bash
 

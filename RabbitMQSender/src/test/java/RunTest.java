@@ -1,4 +1,4 @@
-import org.example.Main;
+import org.example.RabbitMQSender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +21,8 @@ public class RunTest {
     @Test
     public void test1() {
         System.out.println("Test 1");
-        Main.main(new String[] {});
+//        Main.main(new String[] {});
+        RabbitMQSender.main(new String[] {});
         System.out.println("Test 1 done");
     }
 
