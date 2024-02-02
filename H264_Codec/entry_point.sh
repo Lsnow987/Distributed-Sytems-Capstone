@@ -2,10 +2,10 @@
 
 # Function to configure RabbitMQ
 configure_rabbitmq() {
-    /usr/sbin/rabbitmq-server -detached  # Specify the full path to rabbitmq-server
+    /usr/sbin/rabbitmq-server -detached  
     sleep 5
     rabbitmqctl start_app
-    /usr/sbin/rabbitmq-plugins enable rabbitmq_management  # Specify the full path to rabbitmq-plugins
+    /usr/sbin/rabbitmq-plugins enable rabbitmq_management  
     /usr/sbin/rabbitmqctl add_user lsnow shaarei1234
     /usr/sbin/rabbitmqctl set_user_tags lsnow administrator
     /usr/sbin/rabbitmqctl set_permissions -p / lsnow ".*" ".*" ".*"

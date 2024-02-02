@@ -1,8 +1,3 @@
-//docker image build -t docker-rabbitmq:latest .
-// docker run docker-rabbitmq:latest
-//docker run --name docker-java-jar-latest --network mynetwork --hostname docker-java-jar -p 5672:5672 -p 15672:15672 docker-java-jar:latest
-// docker run --name docker-java-jar-latest --network mynetwork --hostname docker-java-jar -p 5672:5672 -p 15672:15672 -v /home/lsnow/upload:/home/lsnow/upload -v /home/lsnow/videos:/videos docker-java-jar:latest
-//  docker run --name my-rabbitmq-container --network mynetwork docker-rabbitmq:latest
 package org.example;
 
 import com.rabbitmq.client.Channel;
@@ -28,9 +23,6 @@ public class RabbitMQSender {
             return;
         }
         ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("localhost");
-//        factory.setHost("172.18.0.2");
-//        factory.setHost("docker-java-jar");
         factory.setHost("rabbitmq-service");
         factory.setPort(5672);
         factory.setUsername("lsnow");
