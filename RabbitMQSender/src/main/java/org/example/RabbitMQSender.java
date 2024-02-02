@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitMQSender {
     private static final String QUEUE_NAME = "video-processing-queue";
     private static final String MESSAGE = "/home/lsnow/upload/input1.mp4";
-    private static final int DELAY_SECONDS = 5;
+    private static final int DELAY_SECONDS = 30;
 
     public static void main(String[] args) {
         // Connect to RabbitMQ and send a message
@@ -30,7 +30,8 @@ public class RabbitMQSender {
         ConnectionFactory factory = new ConnectionFactory();
 //        factory.setHost("localhost");
 //        factory.setHost("172.18.0.2");
-        factory.setHost("docker-java-jar");
+//        factory.setHost("docker-java-jar");
+        factory.setHost("rabbitmq-service");
         factory.setPort(5672);
         factory.setUsername("lsnow");
         factory.setPassword("shaarei1234");

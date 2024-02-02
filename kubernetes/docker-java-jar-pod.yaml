@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-java-jar-pod-v2
+  labels:
+    app: docker-java-jar
+spec:
+  containers:
+  - name: docker-java-jar-container
+    image: lsnow987/docker-java-jar:v7
+    ports:
+    - containerPort: 5672
+    - containerPort: 15672
+    volumeMounts:
+    - name: upload-volume
+      mountPath: /home/lsnow/upload
+    - name: videos-volume
+      mountPath: /videos
+  volumes:
+  - name: upload-volume
+    hostPath:
+      path: /home/lsnow/upload
+  - name: videos-volume
+    hostPath:
+      path: /home/lsnow/videos

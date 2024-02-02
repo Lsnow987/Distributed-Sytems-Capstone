@@ -18,7 +18,8 @@ public class Main {
         }
         // Connect to RabbitMQ and consume messages
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("docker-java-jar");
+//        factory.setHost("docker-java-jar-pod-v2");
+        factory.setHost("rabbitmq-service");
         factory.setPort(5672);
         factory.setUsername("lsnow");
         factory.setPassword("shaarei1234");
