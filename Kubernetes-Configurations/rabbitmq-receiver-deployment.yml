@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-receiver-service
+spec:
+  selector:
+    app: rabbitmq-receiver
+  ports:
+    - name: rabbitmq
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+    - name: rabbitmq-management
+      protocol: TCP
+      port: 15672
+      targetPort: 15672
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-receiver-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-receiver
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-receiver
+    spec:
+      containers:
+        - name: rabbitmq-receiver-container
+          image: lsnow987/rabbitmq-receiver:v4
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: "your-erlang-cookie"  # Set a secure Erlang cookie
+          volumeMounts:
+            - name: video-volume
+              mountPath: /home/lsnow/video_to_process
+      volumes:
+        - name: video-volume
+          hostPath:
+            path: /home/lsnow/video_to_process

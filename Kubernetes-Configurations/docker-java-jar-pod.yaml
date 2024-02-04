@@ -7,10 +7,10 @@ metadata:
 spec:
   containers:
   - name: docker-java-jar-container
-    image: lsnow987/docker-java-jar:v7
-    ports:
-    - containerPort: 5672
-    - containerPort: 15672
+    image: lsnow987/docker-java-jar:v10
+    # ports:
+    # - containerPort: 5672
+    # - containerPort: 15672
     volumeMounts:
     - name: upload-volume
       mountPath: /home/lsnow/upload

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-file-uploader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-file-uploader
+  template:
+    metadata:
+      labels:
+        app: aws-file-uploader
+    spec:
+      containers:
+        - name: aws-file-uploader-container
+          image: your-aws-file-uploader-image:tag
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "your-access-key-id"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "your-secret-access-key"
+            - name: AWS_DEFAULT_REGION
+              value: "your-region"
+          volumeMounts:
+            - name: videos-volume
+              mountPath: /home/lsnow/videos
+      volumes:
+        - name: videos-volume
+          hostPath:
+            path: /home/lsnow/videos

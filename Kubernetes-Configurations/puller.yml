@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-file-downloader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-file-downloader
+  template:
+    metadata:
+      labels:
+        app: aws-file-downloader
+    spec:
+      containers:
+        - name: aws-file-downloader-container
+          image: your-aws-file-downloader-image:tag
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: "your-access-key-id"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "your-secret-access-key"
+            - name: AWS_DEFAULT_REGION
+              value: "your-region"
+          volumeMounts:
+            - name: upload-volume
+              mountPath: /home/lsnow/upload
+      volumes:
+        - name: upload-volume
+          hostPath:
+            path: /home/lsnow/upload
