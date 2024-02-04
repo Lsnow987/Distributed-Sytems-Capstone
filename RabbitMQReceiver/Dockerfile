@@ -1,7 +1,20 @@
 FROM debian:bullseye
 
+# RUN apt update --fix-missing && \
+#     apt install -y openjdk-17-jre ffmpeg inotify-tools rabbitmq-server && \
+#     rm -rf /var/lib/apt/lists/*
+#     originally these 3:
 RUN apt update --fix-missing && \
-    apt install -y openjdk-17-jre ffmpeg inotify-tools rabbitmq-server && \
+    apt install -y openjdk-17-jre ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends inotify-tools && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install RabbitMQ
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends rabbitmq-server && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the JAR file

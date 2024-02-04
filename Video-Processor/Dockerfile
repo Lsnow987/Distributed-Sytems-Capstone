@@ -1,8 +1,18 @@
 FROM debian:bullseye
 
+# RUN apt update --fix-missing && \
+#     apt install -y openjdk-17-jre ffmpeg inotify-tools && \
+#     rm -rf /var/lib/apt/lists/*
+
+#     originally these two:
 RUN apt update --fix-missing && \
-    apt install -y openjdk-17-jre ffmpeg inotify-tools && \
+    apt install -y openjdk-17-jre ffmpeg && \
     rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends inotify-tools && \
+    rm -rf /var/lib/apt/lists/*
+
 
 # Copy the JAR file 
 COPY target/H264_Codec-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
