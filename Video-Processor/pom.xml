@@ -21,39 +21,9 @@
             <version>5.8.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- Add RabbitMQ Java client dependency to your Maven project -->
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.14.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version> <!-- Use the latest version available -->
-        </dependency>
-
-
-
     </dependencies>
     <build>
     <plugins>
-    <!-- Configure maven-jar-plugin to create a JAR file -->
-<!--    <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-jar-plugin</artifactId>-->
-<!--        <version>3.1.0</version>-->
-<!--        <configuration>-->
-<!--            <archive>-->
-<!--                <manifest>-->
-<!--                    <addClasspath>true</addClasspath>-->
-<!--                    <mainClass>org.example.Main</mainClass>-->
-<!--                </manifest>-->
-<!--            </archive>-->
-<!--        </configuration>-->
-<!--    </plugin>-->
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -69,7 +39,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.example.RabbitMQSender</mainClass>
+                            <mainClass>org.example.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
