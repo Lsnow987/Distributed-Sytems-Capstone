@@ -1,7 +1,5 @@
 package com.yourcompany.s3uploader;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -19,12 +17,10 @@ public class S3Uploader {
         // Get the file name from the file path
         String fileName = Paths.get(filePath).getFileName().toString();
 
-        // Create an S3 client
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAW3MD7UEOPMNOYO7C", "RD1oQrnRpfeccd1jY2LGeXuVequuqK+KIYcxAHWo");
+        // Create an S3 client using the Default Credential Provider Chain
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                                 .withRegion(Regions.US_EAST_2)
-                                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                                .build();
+                                .build(); // Automatically uses environment variables
 
         try {
             // Upload the file
